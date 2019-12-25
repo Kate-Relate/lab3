@@ -42,7 +42,7 @@ public class MyReader implements Reader {
             sizeOfPart = parser.getSizeOfPart();
         } catch (FileNotFoundException e) {
             status = Status.ERROR;
-            logger.log("cannot open file to read");
+            logger.log("cannot open file to read (for Reader)");
         }
     }
 
@@ -123,7 +123,7 @@ public class MyReader implements Reader {
     private final class CharAccessor implements DataAccessor {
         @Override
         public @NotNull Object get() {
-            return data;
+            return data.clone();
         }
 
         @Override

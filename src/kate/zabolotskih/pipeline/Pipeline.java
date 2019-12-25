@@ -22,18 +22,18 @@ public class Pipeline {
         }
         writer = pp.getWriter();
         executors.addAll(pp.getExecutors());
-        reader = pp.gerReader();
+        reader = pp.getReader();
 
         reader.addConsumer(executors.get(0));
         executors.get(0).addProducer(reader);
-        status = ((MyReader)executors.get(0)).getStatus();
+        status = (executors.get(0)).status();
         for (int i = 0; i < executors.size() - 1; i++) {
             executors.get(i).addConsumer(executors.get(i+1));
             executors.get(i+1).addProducer(executors.get(i));
             status = ((MyReader)executors.get(i+1)).getStatus();
         }
         writer.addProducer(executors.get(executors.size()-1));
-        status = ((MyReader)executors.get(executors.size()-1)).getStatus();
+        status = (executors.get(executors.size()-1)).status();
         executors.get(executors.size()-1).addConsumer(writer);
     }
 

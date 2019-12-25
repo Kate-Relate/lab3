@@ -67,14 +67,14 @@ public class PipelineParser extends GeneralParser {
             className = (String) line.getValue();
             if (!keyName.startsWith(Grammar.EXECUTOR.toString())) {
                 status = Status.ERROR;
-                logger.log("Incorrect config");
+                logger.log("Incorrect general config (executor lines)");
             }
             line = (Map.Entry) iterator.next();
             configName = (String) line.getKey();
             configFile = (String) line.getValue();
             if (!configName.startsWith(Grammar.EXECUTOR_CONFIG.toString())) {
                 status = Status.ERROR;
-                logger.log("Incorrect config");
+                logger.log("Incorrect general config (executor lines)");
                 return;
             }
             try {
@@ -93,20 +93,20 @@ public class PipelineParser extends GeneralParser {
     private boolean putReaderFromConfig(String keyName, String className, Logger logger, String configName, String configFile) {
         if (!keyName.equals(Grammar.READER.toString())) {
             status = Status.ERROR;
-            logger.log("Incorrect config");
+            logger.log("Incorrect general config (reader line)");
         }
         if (!configName.equals(Grammar.READER_CONFIG.toString())) {
             status = Status.ERROR;
-            logger.log("Incorrect config");
+            logger.log("Incorrect general config (reader line)");
             return false;
-        }//zabolotskih
+        }
         try {
             Class c = Class.forName(className);
             Constructor[] constructors = c.getConstructors();
             reader = (Reader) constructors[0].newInstance(configFile, logger);
         } catch (Exception e) {
             status = Status.ERROR;
-            logger.log("Problem with a name of reader class");
+            logger.log("Problem with the name of reader class");
             return false;
         }
         return true;
@@ -115,11 +115,11 @@ public class PipelineParser extends GeneralParser {
     private boolean putWriterFromConfig(String keyName, String className, Logger logger, String configName, String configFile) {
             if (!keyName.equals(Grammar.WRITER.toString())) {
                 status = Status.ERROR;
-                logger.log("Incorrect config");
+                logger.log("Incorrect general config (writer line)");
             }
             if (!configName.equals(Grammar.WRITER_CONFIG.toString())) {
                 status = Status.ERROR;
-                logger.log("Incorrect config");
+                logger.log("Incorrect general config (writer line)");
                 return false;
             }
             try {
@@ -152,7 +152,7 @@ public class PipelineParser extends GeneralParser {
     public ArrayList<Executor> getExecutors() {
         return executors;
     }
-    public Reader gerReader() {
+    public Reader getReader() {
         return reader;
     }
     public Writer getWriter() {

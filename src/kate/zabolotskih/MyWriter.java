@@ -30,7 +30,7 @@ public class MyWriter implements Writer {
 
         } catch (IOException e) {
             status = Status.ERROR;
-            logger.log("cannot open file to write");
+            logger.log("cannot open file to write (for writer)");
         }
     }
     @Override
@@ -53,7 +53,7 @@ public class MyWriter implements Writer {
             bufferedWriter.flush();
         } catch (IOException e) {
             status = Status.ERROR;
-            logger.log("writing not passed");
+            logger.log("writing not passed (writer)");
         }
     }
 
@@ -75,6 +75,7 @@ public class MyWriter implements Writer {
 
     @Override
     public void addProducers(List<Producer> list) {
+
         for (Producer p: list) {
             Set<String> types = p.outputDataTypes();
 

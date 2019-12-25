@@ -28,7 +28,7 @@ public abstract class GeneralParser {
             fileReader.close();
         } catch (IOException e) {
             status = Status.ERROR;
-            logger.log("cannot process config file");
+            logger.log("cannot process config file of " + config);
         }
     }
 

@@ -26,12 +26,14 @@ public class KatesExecutor implements Executor {
 
     private byte[] table;
     private Status status;
-    byte[] data;
+    private byte[] data;
+    private Logger logger;
 
 
     public KatesExecutor(String conf, Logger logger) {
         consumers = new ArrayList<Consumer>();
         producers = new HashMap<>();
+        this.logger = logger;
 
         status = Status.OK;
         KatesParser parser = new KatesParser(conf, logger);
@@ -42,11 +44,10 @@ public class KatesExecutor implements Executor {
         String tableFile = parser.getTable();
         TableParser tableParser = new TableParser(tableFile, logger);
         if (tableParser.getStatus() != Status.OK) {
-            status = parser.getStatus();
+            status = tableParser.getStatus();
             return;
         }
         table = tableParser.getTable();
-
     }
 
     @Override
@@ -105,7 +106,11 @@ public class KatesExecutor implements Executor {
         if (types.contains(DATA_TYPE))
             producers.put(producer, producer.getAccessor(DATA_TYPE));
         else
+        {
             status = Status.EXECUTOR_ERROR;
+            logger.log("the producer doesn't have this kind of data");
+        }
+
     }
 
     @Override
@@ -131,35 +136,12 @@ public class KatesExecutor implements Executor {
         return status;
     }
 
-    static class TableParser extends GeneralParser {
-        static final int SIZE = 256;
-        private byte[] table;
-        TableParser(String confFile, Logger logger) {
-            super(confFile, logger);
-
-            table = new byte[SIZE];
-            for (int i = Byte.MIN_VALUE; i < Byte.MAX_VALUE; i++) {
-                table[i - Byte.MIN_VALUE] = (byte) (i);
-            }
-            for (Map.Entry entry : configParams.entrySet()) {
-                table[(byte)(((String) entry.getKey()).charAt(0))] =
-                        (byte)((((String) entry.getValue()).charAt(0)) - Byte.MIN_VALUE);
-            }
-        }
-
-        byte[] getTable() {
-            return table;
-        }
-    }
-
-
-
 
     private final class ByteAccessor implements DataAccessor {
 
         @Override
         public @NotNull Object get() {
-            return data;
+            return data.clone();
         }
 
         @Override
@@ -176,7 +158,6 @@ public class KatesExecutor implements Executor {
             newSize = newData.length;
             return newData;
         }
-
         @Override
         public long size() {
             return newSize;
@@ -198,8 +179,6 @@ public class KatesExecutor implements Executor {
             return newSizeOfPart;
         }
     }
-
-
 
     static class KatesParser extends GeneralParser {
         enum Grammar {
@@ -227,6 +206,26 @@ public class KatesExecutor implements Executor {
         }
 
         public String getTable() {
+            return table;
+        }
+    }
+
+    static class TableParser extends GeneralParser {
+        static final int SIZE = 256;
+        private byte[] table;
+        TableParser(String confFile, Logger logger) {
+            super(confFile, logger);
+            table = new byte[SIZE];
+            for (int i = Byte.MIN_VALUE; i < Byte.MAX_VALUE; i++) {
+                table[i - Byte.MIN_VALUE] = (byte) (i);
+            }
+            for (Map.Entry entry : configParams.entrySet()) {
+                table[(byte)(((String) entry.getKey()).charAt(0))] =
+                        (byte)((((String) entry.getValue()).charAt(0)) - Byte.MIN_VALUE);
+            }
+        }
+
+        byte[] getTable() {
             return table;
         }
     }
